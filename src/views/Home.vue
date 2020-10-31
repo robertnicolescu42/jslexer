@@ -7,6 +7,7 @@
     accept="text/*"
     label="File input"
     @change = "selectedFile"
+    show-size
   ></v-file-input>
   <h3 class="mt-6"></h3>
     <v-container fluid>
@@ -14,20 +15,25 @@
         ref="writtenText"
         clearable
         clear-icon="mdi-close-circle"
-        label=""
+        label="Code:"
         auto-grow
-        value=""
         id = "textarea"
-        rows = "15"
+        rows = "10"
+        value = ""
+        placeholder = "The code will appear here..."
       ></v-textarea>
   </v-container>
+  <v-switch
+      v-model="switch1"
+      :label="`Analyze file: ${switch1.toString()}`"
+  ></v-switch>
   <v-btn
     block
     elevation="2"
     large
     outlined
-    v-on:click.native="lexer(code)"
-    >Run
+    v-on:click.native="lexer(code, switch1.toString())"
+    >Analyze!
     </v-btn>
     <p>
       {{ code }}
@@ -46,7 +52,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="item in desserts"
+          v-for="item in results"
           :key="item.name"
         >
           <td>{{ item.name }}</td>
@@ -74,7 +80,8 @@ export default {
   data () {
     return {
       code : '',
-      result : [
+      switch1: false,
+      results : [
         { token: '' },
         { category: '' }
       ]
@@ -84,15 +91,14 @@ export default {
 
   },
 methods: {
-    lexer: function(code) {
-      if (code == ""){
+    lexer: function(code, option) {
+      if (option == "false"){
         code = document.getElementById('textarea').value;
       }
+      results = [];
         //console.log("Initial code:\n" + code);
         //let splitElem = code.split(/[\s+]/); //^[_a-z]\\w*$
         //let splitElem = code.split(/[\w]/); //^[_a-z]\\w*$
-        let i;
-        let buffer = "";
 
         var regexp = /(\w+|\+\+|--|=|<|>|\(|\)|\{|\}|>=|<=|==|;|\*|\/)/g;
 
@@ -103,7 +109,6 @@ methods: {
 
         console.table(results);
 
-        //this.results = results;
     },
 
     analyze: function(item) {
@@ -126,15 +131,15 @@ methods: {
     
     selectedFile(event) {
         //console.log(event);
-
         let reader = new FileReader();
         reader.readAsText(event);
 
         reader.onload = evt => {
             text = evt.target.result;
-
+            this.switch1 = true;
             //console.log(text);
             this.code = text.toString();
+            document.getElementById('textarea').value = this.code;
         }
         reader.onerror = evt => {
             console.error(evt);
