@@ -21,6 +21,7 @@
         rows = "10"
         value = ""
         placeholder = "The code will appear here..."
+        v-on:click="switch1 = false"
       ></v-textarea>
   </v-container>
   <v-switch
@@ -33,12 +34,8 @@
     large
     outlined
     v-on:click.native="lexer(code, switch1.toString())"
-    >Analyze!
+    >Analyze
     </v-btn>
-    <p>
-      {{ code }}
-    </p>
-<!--
     <v-simple-table dense>
       <thead>
         <tr>
@@ -52,15 +49,16 @@
       </thead>
       <tbody>
         <tr
-          v-for="item in results"
-          :key="item.name"
+          v-for="item in resultArr"
+          :key="item.token"
         >
-          <td>{{ item.name }}</td>
-          <td>{{ item.calories }}</td>
+
+          <td>{{ item[0] }}</td>
+          <td>{{ item[1] }}</td>
         </tr>
       </tbody>
   </v-simple-table>
--->
+
   </v-container> 
 
   </div>
@@ -81,9 +79,10 @@ export default {
     return {
       code : '',
       switch1: false,
-      results : [
-        { token: '' },
-        { category: '' }
+      resultArr : [
+        { token: 'tok', 
+          category: 'categ'
+        }
       ]
     }
   },
@@ -107,7 +106,9 @@ methods: {
 
         array.forEach(this.analyze);
 
-        console.table(results);
+        console.log(results);
+        this.resultArr = results;
+        console.log(this.resultArr);
 
     },
 
